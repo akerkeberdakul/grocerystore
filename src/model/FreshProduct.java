@@ -1,3 +1,8 @@
+package model;
+
+import exception.InvalidInputException;
+
+
 public class FreshProduct extends Product {
     private int shelfLifeDays;
 
@@ -8,9 +13,13 @@ public class FreshProduct extends Product {
 
     @Override
     public String work() {
-        return "Fresh product must be sold quickly.";
+        return "Fresh product must be sold within:"+ shelfLifeDays+" days.";
     }
 
+    @Override
+    public String getCategory(){
+        return "model.FreshProduct";
+    }
     @Override
     public String toString() {
         return super.toString() +

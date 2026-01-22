@@ -1,7 +1,11 @@
+package model;
+
+import exception.InvalidInputException;
+
 public abstract class Product {
-    private int id;
-    private String name;
-    private double price;
+    protected int id;
+    protected String name;
+    protected double price;
 
     public Product(int id, String name, double price) {
         this.id = id;
@@ -13,7 +17,7 @@ public abstract class Product {
         return id;
     }
 
-    public String getName() {
+    public  String getName() {
         return name;
     }
 
@@ -26,7 +30,7 @@ public abstract class Product {
         if (name != null && !name.trim().isEmpty()) {
             this.name = name;
         } else {
-            this.name = "Unknown Product";
+            throw new IllegalArgumentException("Name cannot be empty");
         }
     }
 
@@ -34,12 +38,19 @@ public abstract class Product {
         if (price >= 0) {
             this.price = price;
         } else {
-            this.price = 0;
+            throw new IllegalArgumentException("Price cannot be negative");
+
         }
     }
 
+    public void displayInfo() {
+        System.out.println(name + " - " + price + " KZT");
+    }
 
     public abstract String work();
+
+    public abstract String getCategory();
+
 
     @Override
     public String toString() {
@@ -47,4 +58,6 @@ public abstract class Product {
                 ", Name: " + name +
                 ", Price: " + price;
     }
+
+
 }

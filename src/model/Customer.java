@@ -1,3 +1,5 @@
+package model;
+
 public class Customer {
     private int customerId;
     private String name;
@@ -25,7 +27,7 @@ public class Customer {
         if (name != null && !name.trim().isEmpty()) {
             this.name = name;
         } else {
-            this.name = "Unknown Customer";
+            this.name = "Unknown model.Customer";
         }
     }
 
@@ -49,7 +51,7 @@ public class Customer {
 
     @Override
     public String toString() {
-        return "Customer ID: " + customerId +
+        return "model.Customer ID: " + customerId +
                 ", Name: " + name +
                 ", Total Spent: " + totalSpent +
                 ", VIP: " + (isVIP() ? "Yes" : "No");
