@@ -32,9 +32,9 @@ public class GroceryMenu implements Menu{
         System.out.println("========================================");
         System.out.println("1. Add products");
         System.out.println("2. View Products");
-        System.out.println("3. Add model.Customer");
+        System.out.println("3. Add Customer");
         System.out.println("4. View Customers");
-        System.out.println("5. Create model.Sale");
+        System.out.println("5. Create Sale");
         System.out.println("6. View Sales");
         System.out.println("7. Demonstrate Polymorphism");
         System.out.println("0. Exit");
@@ -129,7 +129,7 @@ public class GroceryMenu implements Menu{
             }
 
             products.add(product);
-            System.out.println("model.Product added");
+            System.out.println("Product added");
         } catch (IllegalArgumentException e) {
             System.out.println("Not acceptable" + e.getMessage());
         }
@@ -153,7 +153,7 @@ public class GroceryMenu implements Menu{
             String name = scanner.nextLine();
 
             customers.add(new Customer(id, name, 0));
-            System.out.println("model.Customer added ");
+            System.out.println("Customer added ");
 
         } catch (IllegalArgumentException e) {
             System.out.println("Not acceptable " + e.getMessage());
@@ -165,7 +165,7 @@ public class GroceryMenu implements Menu{
         }
     }
     private void createSale() {
-        System.out.print("model.Sale ID: ");
+        System.out.print("Sale ID: ");
         int saleId = scanner.nextInt();
         scanner.nextLine();
 
@@ -181,7 +181,7 @@ public class GroceryMenu implements Menu{
         boolean adding = true;
         while (adding) {
             viewProducts();
-            System.out.print("model.Product number (0 to stop): ");
+            System.out.print("Product number (0 to stop): ");
             int choice = scanner.nextInt();
 
             if (choice == 0) {
@@ -192,7 +192,7 @@ public class GroceryMenu implements Menu{
         }
 
         sales.add(sale);
-        System.out.println("model.Sale created 🧾");
+        System.out.println("Sale created 🧾");
     }
     private void viewSales() {
         for (Sale s : sales) {
