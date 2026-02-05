@@ -1,209 +1,334 @@
 package menu;
 
 import model.*;
-import java.util.ArrayList;
+import database.*;
+import java.util.List;
 import java.util.Scanner;
-import exception.InvalidInputException;
 
-public class GroceryMenu implements Menu{
-
-    private ArrayList<Product> products;
-    private ArrayList<Customer> customers;
-    private ArrayList<Sale> sales;
+public class GroceryMenu {
     private Scanner scanner;
+    private ProductDAO productDAO;
 
-    public GroceryMenu(){
-        this.products = new ArrayList<>();
-        this.customers = new ArrayList<>();
-        this.sales = new ArrayList<>();
+    public GroceryMenu() {
         this.scanner = new Scanner(System.in);
-
-        products.add(new FreshProduct(1,"Apples",450, 5));
-        products.add(new PackagedProduct(2,"Rice",1200,"Basmati"));
-        products.add(new FrozenProduct(3,"Ice Cream",900,-18));
-
-        customers.add(new Customer(101,"Aruzhan",8500));
-        customers.add(new Customer(102,"Dias",12000));
+        this.productDAO = new ProductDAO();
     }
-    @Override
-    public void displayMenu(){
-        System.out.println("\n======================================");
-        System.out.println("           GROCERY STORE SYSTEM");
-        System.out.println("========================================");
-        System.out.println("1. Add products");
-        System.out.println("2. View Products");
-        System.out.println("3. Add Customer");
-        System.out.println("4. View Customers");
-        System.out.println("5. Create Sale");
-        System.out.println("6. View Sales");
-        System.out.println("7. Demonstrate Polymorphism");
-        System.out.println("0. Exit");
-        System.out.println("========================================");
+
+    public void displayMenu() {
+        System.out.println(" \n-----------GROCERY MENU--------------");
+        System.out.println(" 1. Add Fresh Product                   ");
+        System.out.println(" 2. Add Frozen Product                  ");
+        System.out.println(" 3. Add Packaged Product                ");
+        System.out.println(" 4. View All Products                   ");
+        System.out.println(" 5. Update Product                      ");
+        System.out.println(" 6. Delete Product                      ");
+        System.out.println(" 7. Search by Name                      ");
+        System.out.println(" 8. Search by Price Range               ");
+        System.out.println(" 9. High-Priced Products (>= X)         ");
+        System.out.println("10. Polymorphism Demo                   ");
+        System.out.println("0. Exit                                 ");
     }
-    @Override
-    public void run(){
+
+    public void run() {
         boolean running = true;
 
-        while(running){
+        while (running) {
             displayMenu();
-            System.out.println("Enter choice");
+            System.out.print("\n Enter your choice: ");
 
-            try{
+            try {
                 int choice = scanner.nextInt();
                 scanner.nextLine();
 
-                switch(choice){
-                    case 1:
-                        addProduct();
-                        break;
-                    case 2:
-                        viewProducts();
-                        break;
-                    case 3:
-                        addCustomer();
-                        break;
-                    case 4:
-                        viewCustomers();
-                        break;
-                    case 5:
-                        createSale();
-                        break;
-                    case 6:
-                        viewSales();
-                        break;
-                    case 7:
-                        demonstratePolymorphism();
-                        break;
-                    case 0:
+                switch (choice) {
+                    case 1 -> addFreshProduct();
+                    case 2 -> addFrozenProduct();
+                    case 3 -> addPackagedProduct();
+                    case 4 -> viewAllProducts();
+                    case 5 -> updateProduct();
+                    case 6 -> deleteProduct();
+                    case 7 -> searchByName();
+                    case 8 -> searchByPriceRange();
+                    case 9 -> searchHighPricedProducts();
+                    case 10 -> demonstratePolymorphism();
+                    case 0 -> {
                         running = false;
-                        break;
-                    default:
-                        System.out.println("Invalid choice!");
+                    }
+                    default -> System.out.println(" Invalid choice! Please select 0-10.");
                 }
-            } catch(Exception e){
-                System.out.println("Error: "+e.getMessage());
+
+                if (choice != 0) pressEnterToContinue();
+
+            } catch (java.util.InputMismatchException e) {
+                System.out.println(" Error: Please enter a valid number!");
                 scanner.nextLine();
+                pressEnterToContinue();
+            } catch (Exception e) {
+                System.out.println(" Error: " + e.getMessage());
+                scanner.nextLine();
+                pressEnterToContinue();
             }
         }
+
         scanner.close();
     }
-    private void addProduct(){
-        try{
-            System.out.println("1.Fresh 2.Packaged 3.Frozen");
-            System.out.print("Type: ");
-            int type = scanner.nextInt();
-            scanner.nextLine();
 
-            System.out.print("ID: ");
+    private void addFreshProduct() {
+        try {
+            System.out.println("\n--ADD FRESH PRODUCT -----------------------");
+            System.out.print("│ Enter Product ID: ");
             int id = scanner.nextInt();
             scanner.nextLine();
 
-            System.out.print("Name: ");
+            System.out.print("│ Enter Name: ");
             String name = scanner.nextLine();
 
-            System.out.print("Price: ");
+            System.out.print("│ Enter Price: ");
             double price = scanner.nextDouble();
             scanner.nextLine();
 
-            Product product = null;
+            System.out.print("│ Enter Shelf Life (days): ");
+            int shelfLife = scanner.nextInt();
+            scanner.nextLine();
 
-            switch (type){
-                case 1:
-                System.out.println("Shelf life days: ");
-                int days = scanner.nextInt();
-                product = new FreshProduct(id, name, price, days);
-                    break;
-                case 2:
-                    System.out.print("Brand: ");
-                    String brand = scanner.nextLine();
-                    product = new PackagedProduct(id, name, price, brand);
-                    break;
-                case 3:
-                    System.out.print("Storage temperature: ");
-                    int temp = scanner.nextInt();
-                    product = new FrozenProduct(id, name, price, temp);
-                    break;
-                default:
-                    System.out.println("Invalid product type");
-                    return;
-            }
+            System.out.println("----------------------------------------------");
 
-            products.add(product);
-            System.out.println("Product added");
-        } catch (IllegalArgumentException e) {
-            System.out.println("Not acceptable" + e.getMessage());
+            FreshProduct product = new FreshProduct(id, name, price, shelfLife);
+            productDAO.insertFreshProduct(product);
+
+        } catch (java.util.InputMismatchException e) {
+            System.out.println(" Invalid input type!");
+            scanner.nextLine();
         }
     }
 
-    private void viewProducts(){
-        for(Product p: products){
-            p.displayInfo();
-            System.out.println("Category:"+p.getCategory());
-            System.out.println("Work():"+p.work());
-            System.out.println("-------------------------");
-        }
-    }
-    private void addCustomer() {
+    private void addFrozenProduct() {
         try {
-            System.out.print("ID: ");
+            System.out.println("\n-- ADD FROZEN PRODUCT ----------------------");
+            System.out.print(" Enter Product ID: ");
             int id = scanner.nextInt();
             scanner.nextLine();
 
-            System.out.print("Name: ");
+            System.out.print("│ Enter Name: ");
             String name = scanner.nextLine();
 
-            customers.add(new Customer(id, name, 0));
-            System.out.println("Customer added ");
+            System.out.print(" Enter Price: ");
+            double price = scanner.nextDouble();
+            scanner.nextLine();
 
-        } catch (IllegalArgumentException e) {
-            System.out.println("Not acceptable " + e.getMessage());
+            System.out.print(" Enter Storage Temperature (°C): ");
+            int temp = scanner.nextInt();
+            scanner.nextLine();
+
+            System.out.println("-------------------------------------------");
+
+            FrozenProduct product = new FrozenProduct(id, name, price, temp);
+            productDAO.insertFrozenProduct(product);
+
+        } catch (java.util.InputMismatchException e) {
+            System.out.println(" Invalid input type!");
+            scanner.nextLine();
         }
     }
-    private void viewCustomers() {
-        for (Customer c : customers) {
-            System.out.println(c);
+
+    private void addPackagedProduct() {
+        try {
+            System.out.println("\n-- ADD PACKAGED PRODUCT ----------------------");
+            System.out.print("│ Enter Product ID: ");
+            int id = scanner.nextInt();
+            scanner.nextLine();
+
+            System.out.print("│ Enter Name: ");
+            String name = scanner.nextLine();
+
+            System.out.print("│ Enter Price: ");
+            double price = scanner.nextDouble();
+            scanner.nextLine();
+
+            System.out.print("│ Enter Brand: ");
+            String brand = scanner.nextLine();
+
+            System.out.println("-----------------------------------------------");
+
+            PackagedProduct product = new PackagedProduct(id, name, price, brand);
+            productDAO.insertPackagedProduct(product);
+
+        } catch (java.util.InputMismatchException e) {
+            System.out.println(" Invalid input type!");
+            scanner.nextLine();
         }
     }
-    private void createSale() {
-        System.out.print("Sale ID: ");
-        int saleId = scanner.nextInt();
-        scanner.nextLine();
 
-        System.out.println("Select customer:");
-        for (int i = 0; i < customers.size(); i++) {
-            System.out.println((i + 1) + ". " + customers.get(i).getName());
-        }
 
-        int index = scanner.nextInt() - 1;
-        scanner.nextLine();
-        Sale sale = new Sale(saleId, customers.get(index));
+    private void viewAllProducts() {
+        List<Product> products = productDAO.getAllProducts();
 
-        boolean adding = true;
-        while (adding) {
-            viewProducts();
-            System.out.print("Product number (0 to stop): ");
-            int choice = scanner.nextInt();
+        System.out.println("\n------------------------------------------");
+        System.out.println("         ALL PRODUCTS                    ");
+        System.out.println("-------------------------------------------");
 
-            if (choice == 0) {
-                adding = false;
-            } else {
-                sale.addProduct(products.get(choice - 1));
+        if (products.isEmpty()) {
+            System.out.println(" No products in database.");
+        } else {
+            for (Product p : products) {
+                System.out.println(p.toString());
             }
+            System.out.println("Total Products: " + products.size());
         }
+    }
 
-        sales.add(sale);
-        System.out.println("Sale created 🧾");
-    }
-    private void viewSales() {
-        for (Sale s : sales) {
-            System.out.println(s);
+    private void updateProduct() {
+        try {
+            System.out.println("\n-- UPDATE PRODUCT ------------------------");
+            System.out.print("│ Enter Product ID to update: ");
+            int id = scanner.nextInt();
+            scanner.nextLine();
+
+            Product existing = productDAO.getProductById(id);
+            if (existing == null) {
+                System.out.println(" No product found with ID: " + id);
+                return;
+            }
+
+            System.out.println(" Current Info:");
+            System.out.println(" " + existing.toString());
+            System.out.println("-----------------------------------------");
+
+            System.out.println("\n--ENTER NEW VALUES --------------------");
+            System.out.println("│ (Press Enter to keep current value)");
+
+            System.out.print("│ New Name [" + existing.getName() + "]: ");
+            String newName = scanner.nextLine();
+            if (newName.isEmpty()) newName = existing.getName();
+
+            System.out.print("│ New Price [" + existing.getPrice() + "]: ");
+            String priceInput = scanner.nextLine();
+            double newPrice = priceInput.isEmpty() ? existing.getPrice() : Double.parseDouble(priceInput);
+
+            if (existing instanceof FreshProduct fp) {
+                System.out.print("│ New Shelf Life [" + fp.getShelfLifeDays() + "]: ");
+                String slInput = scanner.nextLine();
+                int newShelfLife = slInput.isEmpty() ? fp.getShelfLifeDays() : Integer.parseInt(slInput);
+                FreshProduct updated = new FreshProduct(id, newName, newPrice, newShelfLife);
+                productDAO.updateFreshProduct(updated);
+
+            } else if (existing instanceof FrozenProduct fr) {
+                System.out.print("│ New Storage Temp [" + fr.getStorageTemp() + "]: ");
+                String tInput = scanner.nextLine();
+                int newTemp = tInput.isEmpty() ? fr.getStorageTemp() : Integer.parseInt(tInput);
+                FrozenProduct updated = new FrozenProduct(id, newName, newPrice, newTemp);
+                productDAO.updateFrozenProduct(updated);
+
+            } else if (existing instanceof PackagedProduct pp) {
+                System.out.print("│ New Brand [" + pp.getBrand() + "]: ");
+                String bInput = scanner.nextLine();
+                String newBrand = bInput.isEmpty() ? pp.getBrand() : bInput;
+                PackagedProduct updated = new PackagedProduct(id, newName, newPrice, newBrand);
+                productDAO.updatePackagedProduct(updated);
+            }
+
+            System.out.println("---------------------------------------");
+
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid number format!");
         }
     }
+
+    private void deleteProduct() {
+        try {
+            System.out.println("\n-- DELETE PRODUCT -----------------------");
+            System.out.print("│ Enter Product ID to delete: ");
+            int id = scanner.nextInt();
+            scanner.nextLine();
+
+            Product existing = productDAO.getProductById(id);
+            if (existing == null) {
+                System.out.println(" No product found with ID: " + id);
+                return;
+            }
+
+            System.out.println("│ Product to delete:");
+            System.out.println("│ " + existing.toString());
+            System.out.println("└────────────────────────────────────────┘");
+
+            System.out.print("  Are you sure? (yes/no): ");
+            String confirm = scanner.nextLine();
+            if (confirm.equalsIgnoreCase("yes")) {
+                productDAO.deleteProduct(id);
+            } else {
+                System.out.println(" Deletion cancelled.");
+            }
+
+        } catch (java.util.InputMismatchException e) {
+            System.out.println(" Invalid input!");
+            scanner.nextLine();
+        }
+    }
+
+
+    private void searchByName() {
+        System.out.print("Enter product name to search: ");
+        String name = scanner.nextLine();
+        List<Product> results = productDAO.searchByName(name);
+        displaySearchResults(results, "Name contains '" + name + "'");
+    }
+
+    private void searchByPriceRange() {
+        try {
+            System.out.print("Enter min price: ");
+            double min = scanner.nextDouble();
+            System.out.print("Enter max price: ");
+            double max = scanner.nextDouble();
+            scanner.nextLine();
+
+            List<Product> results = productDAO.searchByPriceRange(min, max);
+            displaySearchResults(results, "Price: " + min + " - " + max);
+
+        } catch (java.util.InputMismatchException e) {
+            System.out.println(" Invalid number!");
+            scanner.nextLine();
+        }
+    }
+
+    private void searchHighPricedProducts() {
+        try {
+            System.out.print("Enter minimum price: ");
+            double min = scanner.nextDouble();
+            scanner.nextLine();
+
+            List<Product> results = productDAO.searchByMinPrice(min);
+            displaySearchResults(results, "Price >= " + min);
+
+        } catch (java.util.InputMismatchException e) {
+            System.out.println(" Invalid number!");
+            scanner.nextLine();
+        }
+    }
+
+    private void displaySearchResults(List<Product> results, String criteria) {
+        System.out.println("\n---------------------------------------");
+        System.out.println("         SEARCH RESULTS                ");
+        System.out.println("------------------------------------------");
+        System.out.println("Criteria: " + criteria);
+        System.out.println("-------------------------------------------");
+
+        if (results.isEmpty()) {
+            System.out.println(" No products found.");
+        } else {
+            for (Product p : results) {
+                System.out.println(p.toString());
+            }
+            System.out.println("---------------------------------------");
+            System.out.println("Total Results: " + results.size());
+        }
+    }
+
     private void demonstratePolymorphism() {
-        System.out.println("\n--- POLYMORPHISM DEMO ---");
-        for (Product p : products) {
-            System.out.println(p.getName() + " → " + p.work());
-        }
+        productDAO.demonstratePolymorphism();
+    }
+
+    private void pressEnterToContinue() {
+        System.out.println("\n[Press Enter to continue...]");
+        scanner.nextLine();
     }
 }
-

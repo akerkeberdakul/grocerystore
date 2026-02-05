@@ -11,6 +11,7 @@ public class PackagedProduct extends Product implements Discountable {
         super(id, name, price);
         this.brand = brand;
     }
+    public String getBrand(){return brand;}
     @Override
     public double applyDiscount(double percent) {
         if (percent < 0 || percent > 100) {

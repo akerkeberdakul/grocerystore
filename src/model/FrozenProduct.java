@@ -10,7 +10,7 @@ public class FrozenProduct extends Product {
         super(id, name, price);
         this.storageTemp = storageTemp;
     }
-
+    public int getStorageTemp(){return storageTemp;}
     @Override
     public String work() {
         return "Frozen product: store at " + storageTemp + "°C.";

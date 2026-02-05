@@ -3,12 +3,16 @@ package model;
 import exception.InvalidInputException;
 
 
+
 public class FreshProduct extends Product {
     private int shelfLifeDays;
 
     public FreshProduct(int id, String name, double price, int shelfLifeDays) {
         super(id, name, price);
         this.shelfLifeDays = shelfLifeDays;
+    }
+    public int getShelfLifeDays() {
+        return shelfLifeDays;
     }
 
     @Override
@@ -20,6 +24,7 @@ public class FreshProduct extends Product {
     public String getCategory(){
         return "model.FreshProduct";
     }
+
     @Override
     public String toString() {
         return super.toString() +
